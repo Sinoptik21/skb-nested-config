@@ -2,23 +2,21 @@ import _ from 'lodash';
 import fs from 'fs';
 import glob from 'glob';
 
-export default function(getEnvData) {
+export function getEnvData() {
   const obj = {};
   const rootDir = process.env.PWD;
-  const files = glob.sync(rootDir + '/*.env');
+  const files = glob.sync(`${rootDir}/*.env`);
 
-  //_.assign(obj, process.env);
+  // _.assign(obj, process.env);
 
   _.map(files, (file) => {
     const str = fs.readFileSync(file);
 
     _.chain(str)
       .split(/\r?\n|\r/)
-      .map((line) => {
+      .forEach((line) => {
         if (line) {
-          const lineValues = _.chain(line)
-            .split('=')
-            .value();
+          const lineValues = _.split(line, '=');
           _.set(obj, lineValues[0], lineValues[1]);
         }
       })
@@ -26,3 +24,5 @@ export default function(getEnvData) {
   });
   return obj;
 }
+
+export default getEnvData;
